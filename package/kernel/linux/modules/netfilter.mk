@@ -93,7 +93,7 @@ define KernelPackage/nf-nat
   TITLE:=Netfilter NAT
   KCONFIG:=$(KCONFIG_NF_NAT)
   DEPENDS:=+kmod-nf-conntrack +kmod-nf-ipt
-  FILES:=$(foreach mod,$(NF_NAT-m),$(LINUX_DIR)/net/ipv4/$(mod).ko)
+  FILES:=$(foreach mod,$(NF_NAT-m),$(LINUX_DIR)/net$(if $(findstring 3.4,$(KERNEL_PATCHVER)),/ipv4)/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(NF_NAT-m)))
 endef
 
