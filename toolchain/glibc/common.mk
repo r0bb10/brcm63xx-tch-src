@@ -13,6 +13,7 @@ REVISION_2.19 = 25243
 MD5SUM_2.21 = 76050a65c444d58b5c4aa0d6034736ed
 REVISION_2.21 = 16d0a0c
 
+REVISION_2.24 = 9146dc9
 
 PKG_NAME:=glibc
 PKG_VERSION:=$(call qstrip,$(CONFIG_GLIBC_VERSION))
@@ -61,7 +62,7 @@ endif
 GLIBC_CONFIGURE:= \
 	BUILD_CC="$(HOSTCC)" \
 	$(TARGET_CONFIGURE_OPTS) \
-	CFLAGS="$(TARGET_CFLAGS)" \
+	CFLAGS="-O2 $(filter-out -Os,$(call qstrip,$(TARGET_CFLAGS)))" \
 	libc_cv_slibdir="/lib" \
 	use_ldconfig=no \
 	$(HOST_BUILD_DIR)/$(GLIBC_PATH)configure \
@@ -82,10 +83,10 @@ export HOST_CFLAGS := $(HOST_CFLAGS) -idirafter $(CURDIR)/$(PATH_PREFIX)/include
 
 define Host/SetToolchainInfo
 	$(SED) 's,^\(LIBC_TYPE\)=.*,\1=$(PKG_NAME),' $(TOOLCHAIN_DIR)/info.mk
-ifneq ($(CONFIG_GLIBC_VERSION_2_21),)
-	$(SED) 's,^\(LIBC_URL\)=.*,\1=http://www.gnu.org/software/libc/,' $(TOOLCHAIN_DIR)/info.mk
-else
+ifneq ($(CONFIG_EGLIBC_VERSION_2_19),)
 	$(SED) 's,^\(LIBC_URL\)=.*,\1=http://www.eglibc.org/,' $(TOOLCHAIN_DIR)/info.mk
+else
+	$(SED) 's,^\(LIBC_URL\)=.*,\1=http://www.gnu.org/software/libc/,' $(TOOLCHAIN_DIR)/info.mk
 endif
 	$(SED) 's,^\(LIBC_VERSION\)=.*,\1=$(PKG_VERSION),' $(TOOLCHAIN_DIR)/info.mk
 	$(SED) 's,^\(LIBC_SO_VERSION\)=.*,\1=$(PKG_VERSION),' $(TOOLCHAIN_DIR)/info.mk
@@ -98,7 +99,9 @@ define Host/Configure
 		touch $(HOST_BUILD_DIR)/.autoconf; \
 	}
 	mkdir -p $(CUR_BUILD_DIR)
+ifneq ($(CONFIG_EGLIBC_VERSION_2_19),)
 	grep 'CONFIG_EGLIBC_OPTION_' $(TOPDIR)/.config | sed -e "s,\\(# \)\\?CONFIG_EGLIBC_\\(.*\\),\\1\\2,g" > $(CUR_BUILD_DIR)/option-groups.config
+endif
 	( cd $(CUR_BUILD_DIR); rm -f config.cache; \
 		$(GLIBC_CONFIGURE) \
 	);
@@ -107,7 +110,7 @@ endef
 define Host/Prepare
 	$(call Host/Prepare/Default)
 	ln -snf $(PKG_SOURCE_SUBDIR) $(BUILD_DIR_TOOLCHAIN)/$(PKG_NAME)
-ifeq ($(CONFIG_GLIBC_VERSION_2_21),)
+ifneq ($(CONFIG_EGLIBC_VERSION_2_19),)
 	$(SED) 's,y,n,' $(HOST_BUILD_DIR)/libc/option-groups.defaults
 endif
 endef
