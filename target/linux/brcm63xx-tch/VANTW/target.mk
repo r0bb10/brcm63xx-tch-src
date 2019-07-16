@@ -10,6 +10,8 @@ define Target/Description
 	Broadcom 63x38 (VANT-S)
 endef
 
+TARGET_FAMILY_MEMBERS:=VANT-W:SN VBNT-F:Z6 VBNT-H:Z8 VBNT-K:ZA VBNT-S:ZI
+
 BCM_SDK=$(TOPDIR)/extern/vant-w_18.3.313_1_20190509
 BRCMDRIVERS_DIR:=$(BCM_SDK)/broadcom_modules/bcmdrivers
 BCM_USERSPACE_DIR:=
