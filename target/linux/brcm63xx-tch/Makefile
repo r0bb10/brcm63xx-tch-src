@@ -9,11 +9,13 @@ include $(TOPDIR)/rules.mk
 BOARD:=brcm63xx-tch
 BOARDNAME:=Broadcom BCM63xx based Technicolor platform
 
-SUBTARGETS:=VANTF VBNTK VBNTO
+SUBTARGETS:=VANTF VANTW VBNTK VBNTO VBNTS
 
-LINUX_VERSION:=3.4.11
-LINUX_RELEASE:=rt19
+LINUX_VERSION-3.4 = .11
+LINUX_VERSION-4.1 = .38
+
 KERNEL_PATCHVER:=3.4
+LINUX_RELEASE:=rt19
 
 FEATURES:=squashfs jffs2 usb atm pci pcmcia
 DEFAULT_PACKAGES += kmod-switch gpioctl
@@ -23,10 +25,9 @@ INSTALL_MOD_DIR:=extra
 BRCM_BOARD:=bcm963xx
 HOSTTOOLS_DIR:=$(TOPDIR)/scripts
 SCRIPT_DIR:=$(TOPDIR)/scripts
+SHELL:=/bin/bash
 
-PROFILE:=963138BGWV
-
-export BCM_KF INSTALL_MOD_DIR BRCM_BOARD PROFILE HOSTTOOLS_DIR SCRIPT_DIR
+export BCM_KF INSTALL_MOD_DIR BRCM_BOARD HOSTTOOLS_DIR SCRIPT_DIR
 
 define Target/Description
 	Build firmware images for Technicolor Broadcom based xDSL/routers
