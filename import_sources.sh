@@ -44,6 +44,8 @@ patch -p1 < "$REPO_ROOT/extern.patch"
 popd
 }
 
+
+
 ###########################################
 [ -n "$KERNEL_A" ] || KERNEL_A=linux-4.1.38
 KERNEL_A_DIR="$REPO_ROOT/dl/$KERNEL_A"
@@ -51,7 +53,7 @@ echo "a <- $KERNEL_A_DIR"
 [ -d ${KERNEL_A_DIR} ] || {
   echo -n "Preparing original kernel... "
   [ -f ${KERNEL_A_DIR}.tar.xz ] || {
-    echo -e "failed\n\tmissing tarball for KERNEL_A at ${KERNEL_A_DIR}.tar.xz" && exit 1
+    echo -e "failed\n\tmissing tarball for KERNEL_A at ${KERNEL_A_DIR}.tar.xz" && return
   }
   tar -xf ${KERNEL_A_DIR}.tar.xz -C ${REPO_ROOT}/dl && echo "done"
 }
@@ -61,7 +63,7 @@ KERNEL_B_DIR="${ARCHIVE_ROOT}/kernel/$KERNEL_B"
 echo "b <- ${KERNEL_B_DIR}"
 echo -n "Diffing kernel... "
 [ -d ${KERNEL_B_DIR} ] || {
-  echo -e "failed\n\tKERNEL_B (${KERNEL_B}) not found at ${KERNEL_B_DIR}" && exit 1
+  echo -e "failed\n\tKERNEL_B (${KERNEL_B}) not found at ${KERNEL_B_DIR}" && return
 }
 
 rm a b
