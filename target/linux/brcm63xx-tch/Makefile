@@ -27,7 +27,7 @@ HOSTTOOLS_DIR:=$(TOPDIR)/scripts
 SCRIPT_DIR:=$(TOPDIR)/scripts
 SHELL:=/bin/bash
 
-export BCM_KF INSTALL_MOD_DIR BRCM_BOARD HOSTTOOLS_DIR SCRIPT_DIR
+export BCM_KF INSTALL_MOD_DIR BRCM_BOARD HOSTTOOLS_DIR SCRIPT_DIR SHELL
 
 define Target/Description
 	Build firmware images for Technicolor Broadcom based xDSL/routers
