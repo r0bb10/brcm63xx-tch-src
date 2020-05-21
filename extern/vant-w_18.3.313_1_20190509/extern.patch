@@ -1,0 +1,76 @@
+--- broadcom_modules.a/bcmdrivers/opensource/net/enet/impl5/bcmenet.c	2020-05-21 15:11:08.520842000 +0200
++++ broadcom_modules.b/bcmdrivers/opensource/net/enet/impl5/bcmenet.c	2020-05-21 15:38:41.449532800 +0200
+@@ -504,6 +504,9 @@
+     return "Internal PHY";
+ }
+ 
++// extern patch: declare missing BpGetVethPortmap_tch
++extern int BpGetVethPortmap_tch(int * arg1, char * arg2);
++
+ /* Create virtual eth ports: one for each physical switch port except
+    for the GPON port */
+ static int create_vport(void)
+@@ -3105,6 +3108,13 @@
+ {
+ }
+ 
++// extern patch: declare missing BpGetusLinkLed_tch
++extern void BpGetusLinkLed_tch(unsigned short * arg1, int arg2, int arg3);
++
++// extern patch: declare missing BpGrepPinmuxByPortandGpio_tch
++extern int BpGrepPinmuxByPortandGpio_tch(int arg1, int arg2,
++                           unsigned short arg3, unsigned short * arg4, unsigned long * arg5);
++
+ /* Technicolor: START: allow for crossbar ports to be selectively used as WAN or LAN
+ **   For crossbar ports that are associated with both LAN(switch) and WAN(runner) operation,
+ **   disable the crossbar input for the network that it is not enabled for.
+--- broadcom_modules.a/bcmdrivers/opensource/net/enet/impl5/bcmenet_runner.c	2020-05-21 16:03:24.875586200 +0200
++++ broadcom_modules.b/bcmdrivers/opensource/net/enet/impl5/bcmenet_runner.c	2020-05-21 16:07:18.005802900 +0200
+@@ -736,6 +736,12 @@
+ }
+ #endif
+ 
++// extern patch: declare missing BpGetAELinkLed_tch
++extern int BpGetAELinkLed_tch(unsigned short * arg1);
++
++// extern patch: declare missing bcm_hwLed_config
++extern void bcm_hwLed_config(unsigned short arg1, int arg2);
++
+ static void crossbar_update_wan_link_status(int unit, int physical_port, int cb_port, int lnk_status)
+ {
+ /* 63138B0 onwards 5x3 crossbar supports WAN LED and need link status for RGMII ports */
+--- broadcom_modules.a/bcmdrivers/opensource/net/enet/impl5/bcmsw.c	2020-05-21 15:42:07.823045200 +0200
++++ broadcom_modules.b/bcmdrivers/opensource/net/enet/impl5/bcmsw.c	2020-05-21 15:45:42.021404500 +0200
+@@ -809,6 +809,8 @@
+ 
+ extern unsigned int UtilGetChipIsLP(void);
+ 
++// extern patch: declare missing BpGetExtSwLedCfg_tch
++extern int BpGetExtSwLedCfg_tch(unsigned short * arg1);
+ 
+ #define REG_LED_FUNCTION_1  0x12
+ void extsw_led_init(void)
+--- broadcom_modules.a/bcmdrivers/opensource/net/enet/impl5/ethsw_phy.c	2020-05-21 15:57:53.959731200 +0200
++++ broadcom_modules.b/bcmdrivers/opensource/net/enet/impl5/ethsw_phy.c	2020-05-21 15:59:49.534364100 +0200
+@@ -1567,6 +1567,9 @@
+     return 1;
+ }
+ 
++// extern patch: declare missing BpGetSfpTxDisableGpio
++extern int BpGetSfpTxDisableGpio(unsigned short * arg1);
++
+ void ethsw_sfp_init(int phyId)
+ {
+ #if defined(CONFIG_I2C)
+--- broadcom_modules.a/bcmdrivers/opensource/net/enet/shared/bcmswaccess.c	2020-05-21 15:49:26.940436200 +0200
++++ broadcom_modules.b/bcmdrivers/opensource/net/enet/shared/bcmswaccess.c	2020-05-21 15:53:30.361601100 +0200
+@@ -289,6 +289,9 @@
+     return ret;
+ }
+ 
++// extern patch: declare missing BpGetLanWanMuxSwPort
++extern int BpGetLanWanMuxSwPort(int arg1, void * arg2);
++
+ int enet_ioctl_ethsw_info(struct net_device *dev, struct ethswctl_data *e, BcmEnet_devctrl *priv)
+ {
+     int bus_type = MBUS_NONE, spi_id = 0, spi_cid = 0;

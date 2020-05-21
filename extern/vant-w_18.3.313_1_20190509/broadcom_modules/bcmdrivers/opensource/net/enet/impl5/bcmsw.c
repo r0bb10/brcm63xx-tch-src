@@ -809,6 +809,8 @@ void bcmeapi_conf_que_thred(void)
 
 extern unsigned int UtilGetChipIsLP(void);
 
+// extern patch: declare missing BpGetExtSwLedCfg_tch
+extern int BpGetExtSwLedCfg_tch(unsigned short * arg1);
 
 #define REG_LED_FUNCTION_1  0x12
 void extsw_led_init(void)

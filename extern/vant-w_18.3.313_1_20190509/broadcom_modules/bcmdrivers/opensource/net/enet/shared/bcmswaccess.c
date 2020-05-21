@@ -289,6 +289,9 @@ int enet_is_mmapped_external_switch(unit)
     return ret;
 }
 
+// extern patch: declare missing BpGetLanWanMuxSwPort
+extern int BpGetLanWanMuxSwPort(int arg1, void * arg2);
+
 int enet_ioctl_ethsw_info(struct net_device *dev, struct ethswctl_data *e, BcmEnet_devctrl *priv)
 {
     int bus_type = MBUS_NONE, spi_id = 0, spi_cid = 0;

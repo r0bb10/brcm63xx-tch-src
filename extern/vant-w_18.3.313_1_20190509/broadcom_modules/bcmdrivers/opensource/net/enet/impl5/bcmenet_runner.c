@@ -736,6 +736,12 @@ static void qgphy3_work_around(void)
 }
 #endif
 
+// extern patch: declare missing BpGetAELinkLed_tch
+extern int BpGetAELinkLed_tch(unsigned short * arg1);
+
+// extern patch: declare missing bcm_hwLed_config
+extern void bcm_hwLed_config(unsigned short arg1, int arg2);
+
 static void crossbar_update_wan_link_status(int unit, int physical_port, int cb_port, int lnk_status)
 {
 /* 63138B0 onwards 5x3 crossbar supports WAN LED and need link status for RGMII ports */

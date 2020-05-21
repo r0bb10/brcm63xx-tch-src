@@ -504,6 +504,9 @@ static char *print_phy_attribute(int phy_id)
     return "Internal PHY";
 }
 
+// extern patch: declare missing BpGetVethPortmap_tch
+extern int BpGetVethPortmap_tch(int * arg1, char * arg2);
+
 /* Create virtual eth ports: one for each physical switch port except
    for the GPON port */
 static int create_vport(void)
@@ -3104,6 +3107,13 @@ void bcm_init_port_attr(void)
 static void bcmenet_check_addl_wan_config(void)
 {
 }
+
+// extern patch: declare missing BpGetusLinkLed_tch
+extern void BpGetusLinkLed_tch(unsigned short * arg1, int arg2, int arg3);
+
+// extern patch: declare missing BpGrepPinmuxByPortandGpio_tch
+extern int BpGrepPinmuxByPortandGpio_tch(int arg1, int arg2,
+                           unsigned short arg3, unsigned short * arg4, unsigned long * arg5);
 
 /* Technicolor: START: allow for crossbar ports to be selectively used as WAN or LAN
 **   For crossbar ports that are associated with both LAN(switch) and WAN(runner) operation,

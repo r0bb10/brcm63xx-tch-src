@@ -1567,6 +1567,9 @@ static int ethsw_sfp_module_detect(int phyId)
     return 1;
 }
 
+// extern patch: declare missing BpGetSfpTxDisableGpio
+extern int BpGetSfpTxDisableGpio(unsigned short * arg1);
+
 void ethsw_sfp_init(int phyId)
 {
 #if defined(CONFIG_I2C)
