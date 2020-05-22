@@ -74,3 +74,38 @@
  int enet_ioctl_ethsw_info(struct net_device *dev, struct ethswctl_data *e, BcmEnet_devctrl *priv)
  {
      int bus_type = MBUS_NONE, spi_id = 0, spi_cid = 0;
+--- broadcom_modules.a/bcmdrivers/Kconfig.autogen	1970-01-01 01:00:00.000000000 +0100
++++ broadcom_modules.b/bcmdrivers/Kconfig.autogen	2020-05-22 17:41:53.640000000 +0200
+@@ -0,0 +1,19 @@
++# Automatically generated file -- do not modify manually
++
++
++menu "CRYPTODEV"
++source "$BCMDRIVERS_DIR_RELATIVE/opensource/char/cryptodev/Kconfig.autodetect"
++endmenu 
++
++menu "MCAST"
++source "$BCMDRIVERS_DIR_RELATIVE/opensource/char/mcast/Kconfig.autodetect"
++endmenu 
++
++menu "PDC"
++source "$BCMDRIVERS_DIR_RELATIVE/opensource/char/pdc/Kconfig.autodetect"
++endmenu 
++
++menu "SPU"
++source "$BCMDRIVERS_DIR_RELATIVE/opensource/char/spudd/Kconfig.autodetect"
++endmenu 
++
+--- broadcom_modules.a/bcmdrivers/Makefile.autogen	1970-01-01 01:00:00.000000000 +0100
++++ broadcom_modules.b/bcmdrivers/Makefile.autogen	2020-05-22 17:19:00.420000000 +0200
+@@ -0,0 +1,10 @@
++# Automatically generated file -- do not modify manually
++
++
++$(info READING AG MAKEFILE)
++
++
++$(eval $(call LN_RULE_AG, CONFIG_BCM_CRYPTODEV, opensource/char/cryptodev, $(LN_NAME)))
++$(eval $(call LN_RULE_AG, CONFIG_BCM_MCAST, opensource/char/mcast, $(LN_NAME)))
++$(eval $(call LN_RULE_AG, CONFIG_BCM_PDC, opensource/char/pdc, $(LN_NAME)))
++$(eval $(call LN_RULE_AG, CONFIG_BCM_SPU, opensource/char/spudd, $(LN_NAME)))
