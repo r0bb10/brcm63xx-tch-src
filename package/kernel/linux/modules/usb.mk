@@ -18,7 +18,7 @@ define KernelPackage/usb-core
   KCONFIG:=CONFIG_USB CONFIG_XPS_USB_HCD_XILINX=n CONFIG_USB_FHCI_HCD=n
   FILES:= \
 	$(LINUX_DIR)/drivers/usb/core/usbcore.ko \
-	$(LINUX_DIR)/drivers/usb/usb-common.ko
+	$(LINUX_DIR)/drivers/usb/common/usb-common.ko
   AUTOLOAD:=$(call AutoLoad,20,usb-common usbcore,1)
   $(call AddDepends/nls)
 endef
@@ -313,7 +313,8 @@ define KernelPackage/usb-ohci
 	CONFIG_USB_OHCI_HCD_OMAP3=y \
 	CONFIG_USB_OHCI_HCD_PLATFORM=y
   FILES:= \
-	$(LINUX_DIR)/drivers/usb/host/ohci-hcd.ko
+	$(LINUX_DIR)/drivers/usb/host/ohci-hcd.ko \
+	$(LINUX_DIR)/drivers/usb/host/ohci-platform.ko
   ifneq ($(wildcard $(LINUX_DIR)/drivers/usb/host/ohci-at91.ko),)
     FILES+=$(LINUX_DIR)/drivers/usb/host/ohci-at91.ko
   endif
@@ -421,7 +422,8 @@ define KernelPackage/usb2
 	CONFIG_USB_EHCI_HCD_PLATFORM=y \
 	CONFIG_USB_EHCI_HCD_AT91=y
   FILES:= \
-	$(LINUX_DIR)/drivers/usb/host/ehci-hcd.ko
+	$(LINUX_DIR)/drivers/usb/host/ehci-hcd.ko \
+	$(LINUX_DIR)/drivers/usb/host/ehci-platform.ko
   ifneq ($(wildcard $(LINUX_DIR)/drivers/usb/host/ehci-orion.ko),)
     FILES+=$(LINUX_DIR)/drivers/usb/host/ehci-orion.ko
   endif
@@ -1059,7 +1061,8 @@ $(eval $(call KernelPackage,usb-atm-cxacru))
 define KernelPackage/usb-net
   TITLE:=Kernel modules for USB-to-Ethernet convertors
   DEPENDS:=+kmod-mii
-  KCONFIG:=CONFIG_USB_USBNET
+  KCONFIG:=CONFIG_USB_USBNET \
+	CONFIG_USB_NET_DRIVERS
   AUTOLOAD:=$(call AutoProbe,usbnet)
   FILES:=$(LINUX_DIR)/drivers/$(USBNET_DIR)/usbnet.ko
   $(call AddDepends/usb)

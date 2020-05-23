@@ -2,18 +2,18 @@
 
 
 menu "CRYPTODEV"
-source "$BCMDRIVERS_DIR_RELATIVE/opensource/char/cryptodev/Kconfig.autodetect"
+source "$BRCMDRIVERS_DIR_RELATIVE/opensource/char/cryptodev/Kconfig.autodetect"
 endmenu 
 
 menu "MCAST"
-source "$BCMDRIVERS_DIR_RELATIVE/opensource/char/mcast/Kconfig.autodetect"
+source "$BRCMDRIVERS_DIR_RELATIVE/opensource/char/mcast/Kconfig.autodetect"
 endmenu 
 
 menu "PDC"
-source "$BCMDRIVERS_DIR_RELATIVE/opensource/char/pdc/Kconfig.autodetect"
+source "$BRCMDRIVERS_DIR_RELATIVE/opensource/char/pdc/Kconfig.autodetect"
 endmenu 
 
 menu "SPU"
-source "$BCMDRIVERS_DIR_RELATIVE/opensource/char/spudd/Kconfig.autodetect"
+source "$BRCMDRIVERS_DIR_RELATIVE/opensource/char/spudd/Kconfig.autodetect"
 endmenu 
 

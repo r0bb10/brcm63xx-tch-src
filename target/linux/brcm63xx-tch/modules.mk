@@ -1,4 +1,3 @@
-#
 # Copyright (C) 2010 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
@@ -10,7 +9,7 @@ define KernelPackage/bcm63xx-tch-chipinfo
   TITLE:=Broadcom Chip Info driver
   DEPENDS:=@TARGET_brcm63xx_tch
   KCONFIG:=CONFIG_BCM_CHIPINFO
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/chipinfo/bcm9$(BRCM_CHIP)/chipinfo.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/chipinfo/bcm9$(BRCM_CHIP)/chipinfo.ko
   AUTOLOAD:=$(call AutoLoad,50,chipinfo)
 endef
 
@@ -21,7 +20,7 @@ define KernelPackage/bcm63xx-tch-otp
   TITLE:=Broadcom otp
   DEPENDS:=@TARGET_brcm63xx_tch
   KCONFIG:=CONFIG_BCM_OTP CONFIG_BCM_OTP_IMPL=1
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/otp/bcm9$(BRCM_CHIP)/otp.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/otp/bcm9$(BRCM_CHIP)/otp.ko
   AUTOLOAD:=$(call AutoLoad,50,otp)
 endef
 
@@ -32,7 +31,7 @@ define KernelPackage/bcm63xx-tch-i2c-bus
   TITLE:=Broadcom HW I2C bus support
   DEPENDS:=@TARGET_brcm63xx_tch +kmod-i2c-core
   KCONFIG:=CONFIG_BCM_I2C_BUS CONFIG_BCM_I2C_BUS_IMPL=1
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/char/i2c/busses/bcm9$(BRCM_CHIP)/i2c_bcm6xxx.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/char/i2c/busses/bcm9$(BRCM_CHIP)/i2c_bcm6xxx.ko
   AUTOLOAD:=$(call AutoLoad,52,i2c_bcm6xxx)
 endef
 
@@ -42,20 +41,20 @@ define KernelPackage/bcm63xx-tch-ingqos
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom Ingress QoS driver
   DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-rdpa-gpl:kmod-bcm63xx-tch-rdpa-gpl
   KCONFIG:=CONFIG_BCM_INGQOS
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/ingqos/bcm9$(BRCM_CHIP)/bcm_ingqos.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/ingqos/bcm9$(BRCM_CHIP)/bcm_ingqos.ko
   AUTOLOAD:=$(call AutoLoad,51,bcm_ingqos)
 endef
 
 $(eval $(call KernelPackage,bcm63xx-tch-ingqos))
 
-
 define KernelPackage/bcm63xx-tch-bpm
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom BPM driver
   DEPENDS:=@TARGET_brcm63xx_tch
-  KCONFIG:=CONFIG_BCM_BPM CONFIG_BCM_BPM_BUF_MEM_PRCNT=15
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/bpm/bcm9$(BRCM_CHIP)/bcm_bpm.ko
+  KCONFIG:=CONFIG_BCM_BPM
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/bpm/bcm9$(BRCM_CHIP)/bcm_bpm.ko
   AUTOLOAD:=$(call AutoLoad,52,bcm_bpm)
 endef
 
@@ -74,8 +73,11 @@ define KernelPackage/bcm63xx-tch-pktflow
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom Packet Flow driver
   DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-xtmrtdrv:kmod-bcm63xx-tch-xtmrtdrv
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-rdpa-gpl:kmod-bcm63xx-tch-rdpa-gpl
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-bdmf:kmod-bcm63xx-tch-bdmf
   KCONFIG:=CONFIG_BCM_PKTFLOW
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/pktflow/bcm9$(BRCM_CHIP)/pktflow.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/pktflow/bcm9$(BRCM_CHIP)/pktflow.ko
   AUTOLOAD:=$(call AutoLoad,53,pktflow)
 endef
 
@@ -86,8 +88,9 @@ define KernelPackage/bcm63xx-tch-fap
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom FAP driver
   DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=+kmod-bcm63xx-tch-pktflow
   KCONFIG:=CONFIG_BCM_FAP CONFIG_BCM_FAP_LAYER2=n CONFIG_BCM_FAP_GSO=y CONFIG_BCM_FAP_GSO_LOOPBACK=y CONFIG_BCM_FAP_IPV6=y
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/fap/bcm9$(BRCM_CHIP)/bcmfap.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/fap/bcm9$(BRCM_CHIP)/bcmfap.ko
   AUTOLOAD:=$(call AutoLoad,54,bcmfap)
 endef
 
@@ -98,7 +101,7 @@ define KernelPackage/bcm63xx-tch-bcmtm
   TITLE:=Broadcom Traffic Manager Driver
   DEPENDS:=@TARGET_brcm63xx_tch
   KCONFIG:=CONFIG_BCM_TM
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/net/tm/bcm9$(BRCM_CHIP)/bcmtm.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/net/tm/bcm9$(BRCM_CHIP)/bcmtm.ko
   AUTOLOAD:=$(call AutoLoad,54,bcmtm)
 endef
 
@@ -107,13 +110,14 @@ $(eval $(call KernelPackage,bcm63xx-tch-bcmtm))
 define KernelPackage/bcm63xx-tch-enet
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom Ethernet driver
-ifdef CONFIG_TARGET_brcm63xx_tch_HG1XEWAN
-  DEPENDS:=@TARGET_brcm63xx_tch +kmod-bcm63xx-tch-pktflow +kmod-bcm63xx-tch-pktrunner +kmod-bcm63xx-tch-bdmf +kmod-bcm63xx-tch-rdpa +TARGET_brcm63xx_tch:bdmf_shell +TARGET_brcm63xx_tch:swmdk
-else
-  DEPENDS:=@TARGET_brcm63xx_tch +kmod-bcm63xx-tch-pktflow
-endif
+  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=+kmod-bcm63xx-tch-pktflow
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-fap:kmod-bcm63xx-tch-fap
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-pktrunner:kmod-bcm63xx-tch-rdpa-gpl
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-pktrunner:kmod-bcm63xx-tch-bdmf
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-rdpa:kmod-bcm63xx-tch-rdpa
   KCONFIG:=CONFIG_BCM_ENET
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/net/enet/bcm9$(BRCM_CHIP)/bcm_enet.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/net/enet/bcm9$(BRCM_CHIP)/bcm_enet.ko
   AUTOLOAD:=$(call AutoLoad,55,bcm_enet)
 endef
 
@@ -124,7 +128,7 @@ define KernelPackage/bcm63xx-tch-bdmf
   TITLE:=Broadcom BDMF driver
   DEPENDS:=@TARGET_brcm63xx_tch
   KCONFIG:=CONFIG_BCM_BDMF
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/char/bdmf/bcm9$(BRCM_CHIP)/bdmf.ko
+  FILES:=$(LINUX_DIR)/../../rdp/projects/$(RDPA_TYPE)_$(BRCM_CHIP)$(BRCM_CHIP_REV)/target/bdmf/bdmf.ko
   AUTOLOAD:=$(call AutoLoad,50,bdmf)
 endef
 
@@ -133,9 +137,11 @@ $(eval $(call KernelPackage,bcm63xx-tch-bdmf))
 define KernelPackage/bcm63xx-tch-rdpa
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom RDPA driver
-  DEPENDS:=@TARGET_brcm63xx_tch +kmod-bcm63xx-tch-rdpa-gpl
+  DEPENDS:=@TARGET_brcm63xx_tch +kmod-bcm63xx-tch-rdpa-gpl PACKAGE_kmod-bcm63xx-tch-pon:kmod-bcm63xx-tch-pon
   KCONFIG:=CONFIG_BCM_RDPA
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/rdpa/bcm9$(BRCM_CHIP)/rdpa.ko
+  KCONFIG+=CONFIG_BCM_DHD_RUNNER=y
+  KCONFIG+=CONFIG_BCM_DHD_RUNNER_GSO=y
+  FILES:=$(LINUX_DIR)/../../rdp/projects/$(RDPA_TYPE)_$(BRCM_CHIP)$(BRCM_CHIP_REV)/target/rdpa/rdpa.ko
   AUTOLOAD:=$(call AutoLoad,52,rdpa)
 endef
 
@@ -146,7 +152,7 @@ define KernelPackage/bcm63xx-tch-ethoam
   TITLE:=Broadcom ETHOAM driver
   DEPENDS:=@TARGET_brcm63xx_tch
   KCONFIG:=CONFIG_BCM_TMS
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/tms/bcm9$(BRCM_CHIP)/nciTMSkmod.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/tms/bcm9$(BRCM_CHIP)/nciTMSkmod.ko
 endef
 
 $(eval $(call KernelPackage,bcm63xx-tch-ethoam))
@@ -154,9 +160,9 @@ $(eval $(call KernelPackage,bcm63xx-tch-ethoam))
 define KernelPackage/bcm63xx-tch-rdpa-mw
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom RDPA Middleware driver
-  DEPENDS:=@TARGET_brcm63xx_tch +kmod-bcm63xx-tch-rdpa-gpl +kmod-bcm63xx-tch-bdmf
+  DEPENDS:=@TARGET_brcm63xx_tch +kmod-bcm63xx-tch-rdpa
   KCONFIG:=CONFIG_BCM_RDPA_MW
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/char/rdpa_mw/bcm9$(BRCM_CHIP)/rdpa_mw.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/char/rdpa_mw/bcm9$(BRCM_CHIP)/rdpa_mw.ko
   AUTOLOAD:=$(call AutoLoad,52,rdpa_mw)
 endef
 
@@ -165,34 +171,36 @@ $(eval $(call KernelPackage,bcm63xx-tch-rdpa-mw))
 define KernelPackage/bcm63xx-tch-rdpa-gpl
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom RDPA GPL driver
-  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS:=@TARGET_brcm63xx_tch +PACKAGE_kmod-bcm63xx-tch-bdmf:kmod-bcm63xx-tch-bdmf
   KCONFIG:=CONFIG_BCM_RDPA_GPL
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/char/rdpa_gpl/bcm9$(BRCM_CHIP)/rdpa_gpl.ko
+  ifneq ($(wildcard $(LINUX_DIR)/../../rdp/projects/$(RDPA_TYPE)_$(BRCM_CHIP)$(BRCM_CHIP_REV)/target/rdpa_gpl/rdpa_gpl.ko),)
+    # 5.02L.02 or later
+    FILES:=$(LINUX_DIR)/../../rdp/projects/$(RDPA_TYPE)_$(BRCM_CHIP)$(BRCM_CHIP_REV)/target/rdpa_gpl/rdpa_gpl.ko
+  else
+    FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/char/rdpa_gpl/bcm9$(BRCM_CHIP)/rdpa_gpl.ko
+  endif
   AUTOLOAD:=$(call AutoLoad,51,rdpa_gpl)
 endef
 
 $(eval $(call KernelPackage,bcm63xx-tch-rdpa-gpl))
 
+define KernelPackage/bcm63xx-tch-rdpa-gpl-ext
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom RDPA GPL EXT driver
+  DEPENDS:=@PACKAGE_kmod-brcm-5.02L.02||@PACKAGE_kmod-brcm-5.02L.03 @TARGET_brcm63xx_tch +PACKAGE_kmod-bcm63xx-tch-rdpa-gpl:kmod-bcm63xx-tch-rdpa-gpl
+  KCONFIG:=CONFIG_BCM_RDPA_GPL_EXT
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/char/rdpa_gpl_ext/bcm9$(BRCM_CHIP)/rdpa_gpl_ext.ko
+  AUTOLOAD:=$(call AutoLoad,51,rdpa_gpl_ext)
+endef
+
+$(eval $(call KernelPackage,bcm63xx-tch-rdpa-gpl-ext))
+
 define KernelPackage/bcm63xx-tch-rdpa-drv
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom RDPA driver
-  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS:=@TARGET_brcm63xx_tch +PACKAGE_kmod-bcm63xx-tch-rdpa-gpl:kmod-bcm63xx-tch-rdpa-gpl +PACKAGE_kmod-bcm63xx-tch-rdpa-gpl-ext:kmod-bcm63xx-tch-rdpa-gpl-ext  +PACKAGE_kmod-bcm63xx-tch-rdpa-mw:kmod-bcm63xx-tch-rdpa-mw
   KCONFIG:=CONFIG_BCM_RDPA_DRV
-ifneq ($(wildcard $(BRCMDRIVERS_DIR)/opensource/char/rdpa_drv/bcm9$(BRCM_CHIP)/rdpa_cmd.ko),)
-  # For 4.16L.04 or higher
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/char/rdpa_drv/bcm9$(BRCM_CHIP)/rdpa_cmd.ko
-else
-ifdef CONFIG_PACKAGE_kmod-brcm-4.16L.02_voice4.16L.01
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/char/rdpa_drv/bcm9$(BRCM_CHIP)/rdpa_cmd_drv.ko \
-         $(BRCMDRIVERS_DIR)/opensource/char/rdpa_drv/bcm9$(BRCM_CHIP)/rdpa_cmd_spdsvc.ko \
-         $(BRCMDRIVERS_DIR)/opensource/char/rdpa_drv/bcm9$(BRCM_CHIP)/rdpa_cmd_tm.ko
-else
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/char/rdpa_drv/bcm9$(BRCM_CHIP)/rdpa_cmd_drv.ko \
-         $(BRCMDRIVERS_DIR)/opensource/char/rdpa_drv/bcm9$(BRCM_CHIP)/rdpa_cmd_spdsvc.ko \
-         $(BRCMDRIVERS_DIR)/opensource/char/rdpa_drv/bcm9$(BRCM_CHIP)/rdpa_cmd_ds_wan_udp_filter.ko \
-         $(BRCMDRIVERS_DIR)/opensource/char/rdpa_drv/bcm9$(BRCM_CHIP)/rdpa_cmd_tm.ko
-endif
-endif
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/char/rdpa_drv/bcm9$(BRCM_CHIP)/rdpa_cmd.ko
   AUTOLOAD:=
 endef
 
@@ -203,8 +211,10 @@ define KernelPackage/bcm63xx-tch-pktrunner
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom Packet Runner
   DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=+kmod-bcm63xx-tch-pktflow
+  DEPENDS+=+kmod-bcm63xx-tch-rdpa-drv
   KCONFIG:=CONFIG_BCM_PKTRUNNER
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/pktrunner/bcm9$(BRCM_CHIP)/pktrunner.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/pktrunner/bcm9$(BRCM_CHIP)/pktrunner.ko
   AUTOLOAD:=$(call AutoLoad,53,pktrunner)
 endef
 
@@ -213,9 +223,9 @@ $(eval $(call KernelPackage,bcm63xx-tch-pktrunner))
 define KernelPackage/bcm63xx-tch-vlan
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom VLAN driver
-  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS:=@TARGET_brcm63xx_tch +PACKAGE_kmod-bcm63xx-tch-rdpa:kmod-bcm63xx-tch-rdpa
   KCONFIG:=CONFIG_BCM_VLAN
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/vlan/bcm9$(BRCM_CHIP)/bcmvlan.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/vlan/bcm9$(BRCM_CHIP)/bcmvlan.ko
   AUTOLOAD:=$(call AutoLoad,56,bcmvlan)
 endef
 
@@ -224,31 +234,21 @@ $(eval $(call KernelPackage,bcm63xx-tch-vlan))
 define KernelPackage/bcm63xx-tch-wireless
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom Wireless driver
-  DEPENDS:=@TARGET_brcm63xx_tch +kmod-bcm63xx-tch-enet
-  DEPENDS+=+(PACKAGE_kmod-brcm-4.16L.02_voice4.16L.01):kmod-bcm63xx-tch-wireless-emf
-  DEPENDS+=+(PACKAGE_kmod-brcm-4.16L.02A):kmod-bcm63xx-tch-wireless-emf
-  DEPENDS+=+(PACKAGE_kmod-brcm-4.16L.03):kmod-bcm63xx-tch-wireless-emf
-  DEPENDS+=+(PACKAGE_kmod-brcm-4.16L.04):kmod-bcm63xx-tch-wireless-emf
-  DEPENDS+=+(PACKAGE_kmod-brcm-4.16L.05):kmod-bcm63xx-tch-wireless-emf
-  KCONFIG:=CONFIG_BCM_WLAN CONFIG_BCM_WLALTBLD="ap_2nv"
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/build/wlobj-wlconfig_lx_wl_dslcpe_pci_ap_2nv-kdb/wl.ko
+  DEPENDS:=@TARGET_brcm63xx_tch 
+  DEPENDS+=+kmod-bcm63xx-tch-enet
+  DEPENDS+=+kmod-bcm63xx-tch-wireless-emf
+  DEPENDS+=+kmod-bcm63xx-tch-wireless-wlcsm
+  DEPENDS+=+PACKAGE_kmod-bcm63xx-tch-wfd:kmod-bcm63xx-tch-wfd
+  KCONFIG:=CONFIG_BCM_WLAN
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/build/wlobj-wlconfig_lx_wl_dslcpe_pci_$(CONFIG_BCM_WLALTBLD)-kdb/wl.ko
   AUTOLOAD:=$(call AutoLoad,57,wl)
 endef
 
 #Common nvram vars
 define KernelPackage/bcm63xx-tch-wireless/install
 	$(INSTALL_DIR) $(1)/etc/wlan_common
-#For impl22 and higher
-ifneq ($(wildcard $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/main/src/shared/bcmcmn_nvramvars.bin),)
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/main/src/shared/bcmcmn_nvramvars.bin $(1)/etc/wlan_common/bcmcmn_nvramvars.bin
-else
-#For impl18 and higher
-ifneq ($(wildcard $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/build/wlobj-wlconfig_lx_wl_dslcpe_pci_ap_2nv-kdb/shared/bcmcmn_nvramvars.bin),)
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/build/wlobj-wlconfig_lx_wl_dslcpe_pci_ap_2nv-kdb/shared/bcmcmn_nvramvars.bin $(1)/etc/wlan_common/bcmcmn_nvramvars.bin
-else
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/build/wlobj-wlconfig_lx_wl_dslcpe_pci_ap_2nv-kdb/shared/nvramvars_cmn.bin $(1)/etc/wlan_common/bcmcmn_nvramvars.bin
-endif
-endif
+	#For impl22 and higher
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/shared/impl1/srom/bcmcmn_nvramvars.bin $(1)/etc/wlan_common/bcmcmn_nvramvars.bin
 endef
 
 $(eval $(call KernelPackage,bcm63xx-tch-wireless))
@@ -256,13 +256,12 @@ $(eval $(call KernelPackage,bcm63xx-tch-wireless))
 define KernelPackage/bcm63xx-tch-wireless-emf
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom Wireless EMF driver
-  DEPENDS:=@PACKAGE_kmod-brcm-4.16L.02_voice4.16L.01||@PACKAGE_kmod-brcm-4.16L.02A||@PACKAGE_kmod-brcm-4.16L.03||@PACKAGE_kmod-brcm-4.16L.04||@PACKAGE_kmod-brcm-4.16L.05
-  #For impl22 and higher
-  ifneq ($(wildcard $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/main/src/emf/wlemf.ko),)
-    FILES:=$(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/main/src/emf/wlemf.ko
-  else
-    FILES:=$(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/emf/wlemf.ko
-  endif
+  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=+kmod-bcm63xx-tch-enet 
+  DEPENDS+=+kmod-bcm63xx-tch-mcast
+  DEPENDS+=+kmod-bcm63xx-tch-wireless-wlcsm
+  DEPENDS+=+PACKAGE_kmod-bcm63xx-tch-wfd:kmod-bcm63xx-tch-wfd
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/main/src/emf/wlemf.ko
   AUTOLOAD:=$(call AutoLoad,56,wlemf)
 endef
 
@@ -271,13 +270,18 @@ $(eval $(call KernelPackage,bcm63xx-tch-wireless-emf))
 define KernelPackage/bcm63xx-tch-wireless-wlcsm
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom Wireless WLCSM driver
-  DEPENDS:=@PACKAGE_kmod-brcm-4.16L.02_voice4.16L.01||@PACKAGE_kmod-brcm-4.16L.02A||@PACKAGE_kmod-brcm-4.16L.03||@PACKAGE_kmod-brcm-4.16L.04||@PACKAGE_kmod-brcm-4.16L.05
-  #For impl22 and higher
-  ifneq ($(wildcard $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/main/src/wl/wlcsm_ext/wlcsm.ko),)
-    FILES:=$(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/main/src/wl/wlcsm_ext/wlcsm.ko
+  DEPENDS:=@TARGET_brcm63xx_tch
+  ifneq ($(wildcard $(LINUX_DIR)/../../bcmdrivers/broadcom/char/wlcsm_ext/bcm9$(BRCM_CHIP)/wlcsm.ko),)
+    #For 5.02L.02 and higher
+    FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/wlcsm_ext/bcm9$(BRCM_CHIP)/wlcsm.ko
   else 
-    FILES:=$(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/wl/wlcsm_ext/wlcsm.ko
-  endif 
+    #For impl22 and higher
+    ifneq ($(wildcard $(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/main/src/wl/wlcsm_ext/wlcsm.ko),)
+      FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/main/src/wl/wlcsm_ext/wlcsm.ko
+    else 
+      FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/wl/wlcsm_ext/wlcsm.ko
+    endif 
+  endif
   AUTOLOAD:=$(call AutoLoad,56,wlcsm)
 endef
 
@@ -286,61 +290,92 @@ $(eval $(call KernelPackage,bcm63xx-tch-wireless-wlcsm))
 define KernelPackage/bcm63xx-tch-wireless-dhd
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom Wireless driver (offloaded)
-  DEPENDS:=@PACKAGE_kmod-brcm-4.16L.02_voice4.16L.01||@PACKAGE_kmod-brcm-4.16L.02A||@PACKAGE_kmod-brcm-4.16L.03||@PACKAGE_kmod-brcm-4.16L.04||@PACKAGE_kmod-brcm-4.16L.05 +kmod-bcm63xx-tch-enet +kmod-bcm63xx-tch-wireless-emf
-  KCONFIG:=CONFIG_BCM_WLAN CONFIG_BCM_WLALTBLD="ap_2nv" CONFIG_BCM_DHD_RUNNER=y
-  #For impl22 and higher
-  ifneq ($(wildcard $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/build/dhdobj-dhdconfig_lx_dhd_dslcpe_pci_ap_2nv-kdb/dhd.ko),)
-    FILES:=$(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/build/dhdobj-dhdconfig_lx_dhd_dslcpe_pci_ap_2nv-kdb/dhd.ko    
-  else
-    FILES:=$(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/build/dhdobj-dhdconfig_lx_dhd_dslcpe_pci_ap_2nv-kdb/dhd.ko
-  endif
+  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=+kmod-bcm63xx-tch-enet
+  DEPENDS+=+kmod-bcm63xx-tch-mcast
+  DEPENDS+=+kmod-bcm63xx-tch-wireless-emf
+  DEPENDS+=+kmod-bcm63xx-tch-wireless-wlcsm
+  DEPENDS+=+PACKAGE_kmod-bcm63xx-tch-wfd:kmod-bcm63xx-tch-wfd
+  KCONFIG:=CONFIG_BCM_WLAN
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/build/dhdobj-dhdconfig_lx_dhd_dslcpe_pci_ap_2nv-kdb/dhd.ko
   AUTOLOAD:=$(call AutoLoad,58,dhd)
 endef
 
-#DHD firmware + common nvram vars
+#Common nvram vars and dhd firmware
 define KernelPackage/bcm63xx-tch-wireless-dhd/install
 	$(INSTALL_DIR) $(1)/etc/wlan_common
-#For impl22 and higher
-ifneq ($(wildcard $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/main/src/shared/bcmcmn_nvramvars.bin),)
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/main/src/shared/bcmcmn_nvramvars.bin $(1)/etc/wlan_common/bcmcmn_nvramvars.bin
-else
-#For impl18 and higher
-ifneq ($(wildcard $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/build/wlobj-wlconfig_lx_wl_dslcpe_pci_ap_2nv-kdb/shared/bcmcmn_nvramvars.bin),)
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/build/wlobj-wlconfig_lx_wl_dslcpe_pci_ap_2nv-kdb/shared/bcmcmn_nvramvars.bin $(1)/etc/wlan_common/bcmcmn_nvramvars.bin
-else
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/build/wlobj-wlconfig_lx_wl_dslcpe_pci_ap_2nv-kdb/shared/nvramvars_cmn.bin $(1)/etc/wlan_common/bcmcmn_nvramvars.bin
-endif
-endif
 	$(INSTALL_DIR) $(1)/etc/wlan_dhd
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/shared/impl1/srom/bcmcmn_nvramvars.bin $(1)/etc/wlan_common/bcmcmn_nvramvars.bin
+ifdef CONFIG_PACKAGE_kmod-bcm63xx-tch-wireless-dhd-fw-43602a1
 	$(INSTALL_DIR) $(1)/etc/wlan_dhd/43602a1
 	$(INSTALL_DIR) $(1)/etc/wlan_dhd/mfg/43602a1
-#For impl22 and higher
-ifneq ($(wildcard $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/43602a1/rtecdc.bin),)
-	#TODO: only install what is needed (43602 or 4366)
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/43602a1/rtecdc.bin $(1)/etc/wlan_dhd/43602a1
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/mfg/43602a1/rtecdc.bin $(1)/etc/wlan_dhd/mfg/43602a1
-	$(INSTALL_DIR) $(1)/etc/wlan_dhd/4366b1
-	$(INSTALL_DIR) $(1)/etc/wlan_dhd/mfg/4366b1
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/4366b1/rtecdc.bin $(1)/etc/wlan_dhd/4366b1
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/mfg/4366b1/rtecdc.bin $(1)/etc/wlan_dhd/mfg/4366b1
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/43602a1/rtecdc.bin $(1)/etc/wlan_dhd/43602a1
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/mfg/43602a1/rtecdc.bin $(1)/etc/wlan_dhd/mfg/43602a1
+endif
+ifdef CONFIG_PACKAGE_kmod-bcm63xx-tch-wireless-dhd-fw-43602a3
+	$(INSTALL_DIR) $(1)/etc/wlan_dhd/43602a3
+	$(INSTALL_DIR) $(1)/etc/wlan_dhd/mfg/43602a3
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/43602a3/rtecdc.bin $(1)/etc/wlan_dhd/43602a3
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/mfg/43602a3/rtecdc.bin $(1)/etc/wlan_dhd/mfg/43602a3
+endif
+ifdef CONFIG_PACKAGE_kmod-bcm63xx-tch-wireless-dhd-fw-4366c0
 	$(INSTALL_DIR) $(1)/etc/wlan_dhd/4366c0
 	$(INSTALL_DIR) $(1)/etc/wlan_dhd/mfg/4366c0
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/4366c0/rtecdc.bin $(1)/etc/wlan_dhd/4366c0
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/mfg/4366c0/rtecdc.bin $(1)/etc/wlan_dhd/mfg/4366c0
-else
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/dongle/43602a1/rtecdc.bin $(1)/etc/wlan_dhd/43602a1
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/dongle/mfg/43602a1/rtecdc.bin $(1)/etc/wlan_dhd/mfg/43602a1
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/4366c0/rtecdc.bin $(1)/etc/wlan_dhd/4366c0
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/mfg/4366c0/rtecdc.bin $(1)/etc/wlan_dhd/mfg/4366c0
+endif
+ifdef CONFIG_PACKAGE_kmod-bcm63xx-tch-wireless-dhd-fw-4363c0
+	$(INSTALL_DIR) $(1)/etc/wlan_dhd/4363c0
+	$(INSTALL_DIR) $(1)/etc/wlan_dhd/mfg/4363c0
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/4363c0/rtecdc.bin $(1)/etc/wlan_dhd/4363c0
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/net/wl/bcm9$(BRCM_CHIP)/dhd/src/dongle/mfg/4363c0/rtecdc.bin $(1)/etc/wlan_dhd/mfg/4363c0
 endif
 endef
 
 $(eval $(call KernelPackage,bcm63xx-tch-wireless-dhd))
+
+define KernelPackage/bcm63xx-tch-wireless-dhd-fw-43602a1
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom Wireless driver firmware for 43602a1
+  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=kmod-bcm63xx-tch-wireless-dhd
+endef
+
+$(eval $(call KernelPackage,bcm63xx-tch-wireless-dhd-fw-43602a1))
+
+define KernelPackage/bcm63xx-tch-wireless-dhd-fw-43602a3
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom Wireless driver firmware for 43602a3
+  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=kmod-bcm63xx-tch-wireless-dhd
+endef
+
+$(eval $(call KernelPackage,bcm63xx-tch-wireless-dhd-fw-43602a3))
+
+define KernelPackage/bcm63xx-tch-wireless-dhd-fw-4366c0
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom Wireless driver firmware for 4366c0
+  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=kmod-bcm63xx-tch-wireless-dhd
+endef
+
+$(eval $(call KernelPackage,bcm63xx-tch-wireless-dhd-fw-4366c0))
+
+define KernelPackage/bcm63xx-tch-wireless-dhd-fw-4363c0
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom Wireless driver firmware for 4363c0
+  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=kmod-bcm63xx-tch-wireless-dhd
+endef
+
+$(eval $(call KernelPackage,bcm63xx-tch-wireless-dhd-fw-4363c0))
 
 define KernelPackage/bcm63xx-tch-usb
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom USB driver
   DEPENDS:=@TARGET_brcm63xx_tch
   KCONFIG:=CONFIG_BCM_USB
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/net/usb/bcm9$(BRCM_CHIP)/bcm_usb.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/net/usb/bcm9$(BRCM_CHIP)/bcm_usb.ko
   AUTOLOAD:=$(call AutoLoad,57,bcm_usb)
 endef
 
@@ -351,7 +386,7 @@ define KernelPackage/bcm63xx-tch-xtm
   TITLE:=Broadcom XTM Config driver
   DEPENDS:=@TARGET_brcm63xx_tch +(!PACKAGE_kmod-brcm-4.14L.04):kmod-bcm63xx-tch-xtmrtdrv
   KCONFIG:=CONFIG_BCM_XTMCFG CONFIG_ADSL_OS_OFFSET=18874368 CONFIG_ADSL_OS_RESERVED_MEM=1253376
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/xtmcfg/bcm9$(BRCM_CHIP)/bcmxtmcfg.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/xtmcfg/bcm9$(BRCM_CHIP)/bcmxtmcfg.ko
   AUTOLOAD:=$(call AutoLoad,59,bcmxtmcfg)
 endef
 
@@ -360,9 +395,11 @@ $(eval $(call KernelPackage,bcm63xx-tch-xtm))
 define KernelPackage/bcm63xx-tch-xtmrtdrv
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom XTM RT driver
-  DEPENDS:=@TARGET_brcm63xx_tch @(!PACKAGE_kmod-brcm-4.14L.04)
+  DEPENDS:=@TARGET_brcm63xx_tch @(!PACKAGE_kmod-brcm-4.14L.04) +PACKAGE_kmod-bcm63xx-tch-rdpa:kmod-bcm63xx-tch-rdpa
+  DEPENDS+=(PACKAGE_kmod-brcm-5.02L.02&&PACKAGE_kmod-bcm63xx-tch-bdmf):kmod-bcm63xx-tch-bdmf
+  DEPENDS+=(PACKAGE_kmod-brcm-5.02L.03&&PACKAGE_kmod-bcm63xx-tch-bdmf):kmod-bcm63xx-tch-bdmf
   KCONFIG:=CONFIG_BCM_XTMRT
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/net/xtmrt/bcm9$(BRCM_CHIP)/bcmxtmrtdrv.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/net/xtmrt/bcm9$(BRCM_CHIP)/bcmxtmrtdrv.ko
   AUTOLOAD:=$(call AutoLoad,50,bcmxtmrtdrv)
 endef
 
@@ -371,9 +408,12 @@ $(eval $(call KernelPackage,bcm63xx-tch-xtmrtdrv))
 define KernelPackage/bcm63xx-tch-wfd
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom Wireless Forwarding Driver
-  DEPENDS:=@PACKAGE_kmod-brcm-4.16L.02_voice4.16L.01||@PACKAGE_kmod-brcm-4.16L.02A||@PACKAGE_kmod-brcm-4.16L.03||@PACKAGE_kmod-brcm-4.16L.04||@PACKAGE_kmod-brcm-4.16L.05
+  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-fap:kmod-bcm63xx-tch-fap
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-pktrunner:kmod-bcm63xx-tch-pktrunner
+  DEPENDS+=+kmod-bcm63xx-tch-mcast
   KCONFIG:=CONFIG_BCM_WIFI_FORWARDING_DRV CONFIG_BCM_WFD_CHAIN_SUPPORT=y
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/net/wfd/bcm9$(BRCM_CHIP)/wfd.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/net/wfd/bcm9$(BRCM_CHIP)/wfd.ko
   AUTOLOAD:=$(call AutoLoad,56,wfd)
 endef
 
@@ -382,22 +422,22 @@ $(eval $(call KernelPackage,bcm63xx-tch-wfd))
 define KernelPackage/bcm63xx-tch-adsl
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom ADSL driver
-  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS:=@TARGET_brcm63xx_tch +PACKAGE_kmod-bcm63xx-tch-xtm:kmod-bcm63xx-tch-xtm
   KCONFIG:=CONFIG_BCM_ADSL
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsldd.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsldd.ko
   AUTOLOAD:=$(call AutoLoad,60,adsldd)
 endef
 
 define KernelPackage/bcm63xx-tch-adsl/install
 	$(INSTALL_DIR) $(1)/etc/adsl
-ifneq ($(wildcard $(BRCMDRIVERS_DIR)/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsl_phy.bin),)
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsl_phy.bin $(1)/etc/adsl
+ifneq ($(wildcard $(LINUX_DIR)/../../bcmdrivers/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsl_phy.bin),)
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsl_phy.bin $(1)/etc/adsl
 endif
-ifneq ($(wildcard $(BRCMDRIVERS_DIR)/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsl_phy0.bin),)
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsl_phy0.bin $(1)/etc/adsl
+ifneq ($(wildcard $(LINUX_DIR)/../../bcmdrivers/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsl_phy0.bin),)
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsl_phy0.bin $(1)/etc/adsl
 endif
-ifneq ($(wildcard $(BRCMDRIVERS_DIR)/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsl_phy1.bin),)
-	$(INSTALL_DATA) $(BRCMDRIVERS_DIR)/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsl_phy1.bin $(1)/etc/adsl
+ifneq ($(wildcard $(LINUX_DIR)/../../bcmdrivers/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsl_phy1.bin),)
+	$(INSTALL_DATA) $(LINUX_DIR)/../../bcmdrivers/broadcom/char/adsl/bcm9$(BRCM_CHIP)/adsl_phy1.bin $(1)/etc/adsl
 endif
 endef
 
@@ -408,7 +448,7 @@ define KernelPackage/bcm63xx-tch-pwrmngt
   TITLE:=Broadcom Power Management driver
   DEPENDS:=@TARGET_brcm63xx_tch
   KCONFIG:=CONFIG_BCM_PWRMNGT
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/pwrmngt/bcm9$(BRCM_CHIP)/pwrmngtd.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/pwrmngt/bcm9$(BRCM_CHIP)/pwrmngtd.ko
   AUTOLOAD:=$(call AutoLoad,61,pwrmngtd)
 endef
 
@@ -417,9 +457,9 @@ $(eval $(call KernelPackage,bcm63xx-tch-pwrmngt))
 define KernelPackage/bcm63xx-tch-arl
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom ARL Table Management driver
-  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS:=@TARGET_brcm63xx_tch +PACKAGE_kmod-bcm63xx-tch-fap:kmod-bcm63xx-tch-fap +PACKAGE_kmod-bcm63xx-tch-pktflow:kmod-bcm63xx-tch-pktflow
   KCONFIG:=CONFIG_BCM_ARL
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/arl/bcm9$(BRCM_CHIP)/bcmarl.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/arl/bcm9$(BRCM_CHIP)/bcmarl.ko
   AUTOLOAD:=$(call AutoLoad,62,bcmarl)
 endef
 
@@ -430,68 +470,68 @@ define KernelPackage/bcm63xx-tch-p8021ag
   TITLE:=Broadcom P8021AG driver
   DEPENDS:=@TARGET_brcm63xx_tch
   KCONFIG:=CONFIG_BCM_P8021AG
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/p8021ag/bcm9$(BRCM_CHIP)/p8021ag.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/p8021ag/bcm9$(BRCM_CHIP)/p8021ag.ko
   AUTOLOAD:=$(call AutoLoad,63,p8021ag)
 endef
 
 $(eval $(call KernelPackage,bcm63xx-tch-p8021ag))
 
-define KernelPackage/bcm63xx-tch-endpoint
-  SUBMENU:=Broadcom specific kernel modules
-  TITLE:=Broadcom Endpoint driver
-  DEPENDS:=@TARGET_brcm63xx_tch 
-  KCONFIG:=CONFIG_BCM_ENDPOINT
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/endpoint/bcm9$(BRCM_CHIP)/endpointdd.ko
-  AUTOLOAD:=
-endef
-
-$(eval $(call KernelPackage,bcm63xx-tch-endpoint))
-
 define KernelPackage/bcm63xx-tch-nfc
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom NFC i2c driver
-  DEPENDS:=@TARGET_brcm63xx_tch @PACKAGE_kmod-brcm-4.16L.04||@PACKAGE_kmod-brcm-4.16L.05 +kmod-i2c-core +kmod-i2c-algo-bit
+  DEPENDS:=@TARGET_brcm63xx_tch @PACKAGE_kmod-brcm-4.16L.04||@PACKAGE_kmod-brcm-4.16L.05||@PACKAGE_kmod-brcm-5.02L.03 +kmod-i2c-core +kmod-i2c-algo-bit
   KCONFIG:=CONFIG_BCM_NFC_I2C CONFIG_BCM_NFC_I2C_IMPL=1
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/char/nfc/bcm9$(BRCM_CHIP)/bcm2079x-i2c.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/char/nfc/bcm9$(BRCM_CHIP)/bcm2079x-i2c.ko
   AUTOLOAD:=$(call AutoLoad,90,bcm2079x-i2c)
 endef
 
 $(eval $(call KernelPackage,bcm63xx-tch-nfc))
-
-define KernelPackage/bcm63xx-tch-pcmshim
-  SUBMENU:=Broadcom specific kernel modules
-  TITLE:=Broadcom PCM SHIM driver
-  DEPENDS:=@TARGET_brcm63xx_tch 
-  KCONFIG:=CONFIG_BCM_PCMSHIM
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/char/pcmshim/bcm9$(BRCM_CHIP)/pcmshim.ko
-  AUTOLOAD:=$(call AutoLoad,99,pcmshim)
-endef
-
-$(eval $(call KernelPackage,bcm63xx-tch-pcmshim))
-
 
 define KernelPackage/bcm63xx-tch-dect
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom DECT driver
   DEPENDS:=@TARGET_brcm63xx_tch 
   KCONFIG:=CONFIG_BCM_DECT
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/dect/bcm9$(BRCM_CHIP)/dect.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/dect/bcm9$(BRCM_CHIP)/dect.ko
   AUTOLOAD:=$(call AutoLoad,99,dect)
 endef
 
 $(eval $(call KernelPackage,bcm63xx-tch-dect))
 
 
-define KernelPackage/bcm63xx-tch-dectshim
+define KernelPackage/bcm63xx-tch-dsphal
   SUBMENU:=Broadcom specific kernel modules
-  TITLE:=Broadcom DECTSHIM driver
-  DEPENDS:=@TARGET_brcm63xx_tch 
-  KCONFIG:=CONFIG_BCM_DECTSHIM
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/char/dectshim/bcm9$(BRCM_CHIP)/dectshim.ko
-  AUTOLOAD:=$(call AutoLoad,99,dectshim)
+  TITLE:=Broadcom DSPHAL driver
+  DEPENDS:=@TARGET_brcm63xx_tch
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-htsk:kmod-bcm63xx-tch-htsk
+  KCONFIG:=CONFIG_BCM_DSPHAL CONFIG_BCM_DSPHAL_IMPL=1
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/char/dsphal/bcm9$(BRCM_CHIP)/dsphal.ko
+  AUTOLOAD:=$(call AutoLoad,99,dsphal)
 endef
 
-$(eval $(call KernelPackage,bcm63xx-tch-dectshim))
+$(eval $(call KernelPackage,bcm63xx-tch-dsphal))
+
+define KernelPackage/bcm63xx-tch-slicslac
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom SLICSLAC driver
+  DEPENDS:=@TARGET_brcm63xx_tch
+  KCONFIG:=CONFIG_BCM_SLICSLAC CONFIG_BCM_SLICSLAC_IMPL=1
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/slicslac/bcm9$(BRCM_CHIP)/slicslac.ko
+  AUTOLOAD:=$(call AutoLoad,99,slicslac)
+endef
+
+$(eval $(call KernelPackage,bcm63xx-tch-slicslac))
+
+define KernelPackage/bcm63xx-tch-htsk
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom HTSK driver
+  DEPENDS:=@TARGET_brcm63xx_tch @(!TARGET_brcm63xx_arm_tch)
+  KCONFIG:=CONFIG_BCM_HTSK CONFIG_BCM_HTSK_IMPL=1
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/ldx/bcm9$(BRCM_CHIP)/htsk.ko
+  AUTOLOAD:=$(call AutoLoad,99,htsk)
+endef
+
+$(eval $(call KernelPackage,bcm63xx-tch-htsk))
 
 define KernelPackage/ipt-dyndscp-bcm63xx-tch
   SUBMENU:=Netfilter Extensions
@@ -515,109 +555,254 @@ endef
 
 $(eval $(call KernelPackage,ipt-nathelper-rtsp-bcm63xx-tch))
 
-define KernelPackage/ipt-skiplog
+define KernelPackage/brcm63xx_tch-ipt-skiplog
   SUBMENU:=Netfilter Extensions
   TITLE:=Broadcom kernel xt SKIPLOG
   DEPENDS:=@TARGET_brcm63xx_tch||TARGET_brcm63xx_arm_tch
+  PROVIDES:=kmod-ipt-skiplog
   KCONFIG:=CONFIG_NETFILTER_XT_TARGET_SKIPLOG
   FILES:=$(LINUX_DIR)/net/netfilter/xt_SKIPLOG.ko
   AUTOLOAD:=$(call AutoLoad,70,xt_SKIPLOG)
 endef
 
-$(eval $(call KernelPackage,ipt-skiplog))
+$(eval $(call KernelPackage,brcm63xx_tch-ipt-skiplog))
+
 define KernelPackage/bcm63xx-tch-moca
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom MoCA driver
   DEPENDS:=@TARGET_brcm63xx_tch +kmod-bcm63xx-tch-enet
   KCONFIG:=CONFIG_BCM_MoCA
-  FILES:=$(BRCMDRIVERS_DIR)/opensource/char/moca/bcm9$(BRCM_CHIP)/bcmmoca.ko
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/char/moca/bcm9$(BRCM_CHIP)/bcmmoca.ko
   AUTOLOAD:=$(call AutoLoad,58,bcmmoca)
 endef
 
 $(eval $(call KernelPackage,bcm63xx-tch-moca))
 
+define KernelPackage/bcm63xx-tch-spdsvc
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom Speed Service driver
+# fap if fap is enabled
+  DEPENDS+=@TARGET_brcm63xx_tch PACKAGE_kmod-bcm63xx-tch-fap:kmod-bcm63xx-tch-fap
+# rdpa if runner is enabled
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-pktrunner:kmod-bcm63xx-tch-rdpa-gpl
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-pktrunner:kmod-bcm63xx-tch-bdmf
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-rdpa:kmod-bcm63xx-tch-rdpa
+  KCONFIG:=CONFIG_BCM_SPDSVC CONFIG_BCM_SPDSVC_IMPL=1
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/spdsvc/bcm9$(BRCM_CHIP)/bcm_spdsvc.ko
+  AUTOLOAD:=$(call AutoLoad,49,bcm_spdsvc)
+endef
+
+$(eval $(call KernelPackage,bcm63xx-tch-spdsvc))
+
+define KernelPackage/bcm63xx-tch-btusb
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom Bluetooth via USB driver
+  DEPENDS:=@TARGET_brcm63xx_tch
+  KCONFIG:=CONFIG_BCM_BLUETOOTH_USB CONFIG_BCM_BLUETOOTH_USB_IMPL=1
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/char/btusb/bcm9$(BRCM_CHIP)/src/btusbdrv.ko
+  AUTOLOAD:=$(call AutoLoad,58,btusbdrv)
+endef
+
+$(eval $(call KernelPackage,bcm63xx-tch-btusb))
+
+
+define KernelPackage/bcm63xx-tch-hsuart
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom High Speed UART driver
+  DEPENDS:=@TARGET_brcm63xx_tch
+  KCONFIG:=CONFIG_BCM_HS_UART CONFIG_BCM_HS_UART_IMPL=1
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/char/hs_uart/bcm9$(BRCM_CHIP)/hs_uart_drv.ko
+  AUTOLOAD:=$(call AutoLoad,58,hs_uart_drv)
+endef
+
+$(eval $(call KernelPackage,bcm63xx-tch-hsuart))
+
 
 define KernelPackage/bcm63xx-tch-dpi
   SUBMENU:=Broadcom specific kernel modules
   TITLE:=Broadcom DPI driver
-  DEPENDS:=@TARGET_brcm63xx_tch @PACKAGE_kmod-brcm-4.16L.05
-  KCONFIG:=CONFIG_BCM_DPI CONFIG_BRCM_DPI=y CONFIG_BCM_DPI_IMPL=1
-  FILES:=$(BRCMDRIVERS_DIR)/broadcom/char/dpiengine/bcm9$(BRCM_CHIP)/tdts.ko \
-         $(BRCMDRIVERS_DIR)/opensource/char/dpi/impl1/dpicore.ko
+  DEPENDS:=@TARGET_brcm63xx_tch +kmod-ipt-conntrack
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-rdpa-gpl:kmod-bcm63xx-tch-rdpa-gpl
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-bdmf:kmod-bcm63xx-tch-bdmf
+  KCONFIG:=CONFIG_BCM_DPI CONFIG_BRCM_DPI=y CONFIG_BCM_DPI_IMPL=1 CONFIG_NF_CONNTRACK_EVENTS=y CONFIG_NF_CONNTRACK_PROC_COMPAT=y
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/dpiengine/bcm9$(BRCM_CHIP)/tdts.ko \
+         $(LINUX_DIR)/../../bcmdrivers/broadcom/char/dpi/bcm9$(BRCM_CHIP)/dpi_qos.ko \
+         $(LINUX_DIR)/../../bcmdrivers/opensource/char/dpicore/bcm9$(BRCM_CHIP)/dpicore.ko
   AUTOLOAD:=
 endef
 
 $(eval $(call KernelPackage,bcm63xx-tch-dpi))
 
-define KernelPackage/brcm-4.16L.01
-  SUBMENU:=Broadcom release
-  TITLE:=Broadcom release 4.16L.01
-  DEPENDS:=@TARGET_brcm63xx_tch
-  KCONFIG:=CONFIG_BCM_WLAN_IMPL=16
-  PROVIDES:=brcm-release
+define KernelPackage/bcm63xx-tch-mcast
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom mcast driver
+  DEPENDS:=@TARGET_brcm63xx_tch @PACKAGE_kmod-brcm-5.02L.02||@PACKAGE_kmod-brcm-5.02L.03
+  KCONFIG:=CONFIG_BCM_MCAST CONFIG_BCM_MCAST_IMPL=1
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/char/mcast/bcm9$(BRCM_CHIP)/bcmmcast.ko
+  AUTOLOAD:=$(call AutoLoad,58,bcmmcast)
 endef
 
-$(eval $(call KernelPackage,brcm-4.16L.01))
+$(eval $(call KernelPackage,bcm63xx-tch-mcast))
 
-define KernelPackage/brcm-4.14L.04
-  SUBMENU:=Broadcom release
-  TITLE:=Broadcom release 4.14L.04
-  DEPENDS:=@TARGET_brcm63xx_tch
-  KCONFIG:=CONFIG_BCM_WLAN_IMPL=16
-  PROVIDES:=brcm-release
+define KernelPackage/bcm63xx-tch-pon
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom PON driver
+  DEPENDS:=@TARGET_brcm63xx_tch @PACKAGE_kmod-brcm-5.02L.03  PACKAGE_kmod-bcm63xx-tch-bdmf:kmod-bcm63xx-tch-bdmf
+  KCONFIG:=CONFIG_BCM_PON CONFIG_BCM_PON_DRV CONFIG_BCM_PON_XRDP CONFIG_BCM_PON_DRV_IMPL=1
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/broadcom/char/pon_drv/bcm9$(BRCM_CHIP)/bcm_pondrv.ko
+  AUTOLOAD:=$(call AutoLoad,51,bcm_pondrv)
 endef
 
-$(eval $(call KernelPackage,brcm-4.14L.04))
+$(eval $(call KernelPackage,bcm63xx-tch-pon))
 
-define KernelPackage/brcm-4.16L.02_voice4.16L.01
-  SUBMENU:=Broadcom release
-  TITLE:=Broadcom release 4.16L.02 with voice on 4.16L.01
-  DEPENDS:=@TARGET_brcm63xx_tch
-  KCONFIG:=CONFIG_BCM_WLAN_IMPL=18
-  PROVIDES:=brcm-release
+define KernelPackage/bcm63xx-tch-spu
+  SUBMENU:=Broadcom specific kernel modules
+  TITLE:=Broadcom SPU crypto driver
+  DEPENDS:=@TARGET_brcm63xx_tch @PACKAGE_kmod-brcm-5.02L.03
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-rdpa-gpl:kmod-bcm63xx-tch-rdpa-gpl
+  DEPENDS+=PACKAGE_kmod-bcm63xx-tch-bdmf:kmod-bcm63xx-tch-bdmf
+  KCONFIG:=CONFIG_BCM_SPU
+  FILES:=$(LINUX_DIR)/../../bcmdrivers/opensource/char/spudd/bcm9$(BRCM_CHIP)/bcmspu.ko
+  AUTOLOAD:=$(call AutoLoad,50,bcmspu)
 endef
 
-$(eval $(call KernelPackage,brcm-4.16L.02_voice4.16L.01))
+$(eval $(call KernelPackage,bcm63xx-tch-spu))
 
-
-define KernelPackage/brcm-4.16L.02A
-  SUBMENU:=Broadcom release
-  TITLE:=Broadcom release 4.16L.02A
-  DEPENDS:=@TARGET_brcm63xx_tch
-  KCONFIG:=CONFIG_BCM_WLAN_IMPL=18
-  PROVIDES:=brcm-release
+define KernelPackage/bcm-tch-1xx_2xx-bl
+  SUBMENU:=Broadcom kernel config
+  TITLE:=Support for TCH 1.x.x/2.x.x BL + flash layout
+  DEPENDS:=@TARGET_brcm63xx_tch @TARGET_ROOTFS_SQUASHFS||@TARGET_ROOTFS_INITRAMFS +PACKAGE_kmod-bcm-nand:kmod-bcm-nandtl bcm-flash
+  KCONFIG:=CONFIG_BCM_TCH_BL=y \
+           CONFIG_MTD_TCH=y \
+           CONFIG_MTD_TCH_BLVERSION=y \
+           CONFIG_MTD_TCH_BLVERSION_OFFSET=0x1FFFD \
+           CONFIG_CMDLINE_BOOL=y
+  PROVIDES:=bcm-bl
 endef
 
-$(eval $(call KernelPackage,brcm-4.16L.02A))
+$(eval $(call KernelPackage,bcm-tch-1xx_2xx-bl))
 
-define KernelPackage/brcm-4.16L.03
-  SUBMENU:=Broadcom release
-  TITLE:=Broadcom release 4.16L.03
-  DEPENDS:=@TARGET_brcm63xx_tch
-  KCONFIG:=CONFIG_BCM_WLAN_IMPL=20
-  PROVIDES:=brcm-release
+
+define KernelPackage/bcm-tch-cfe-bl
+  SUBMENU:=Broadcom kernel config
+  TITLE:=Support for TCH CFE based BL + flash layout
+  DEPENDS:=@TARGET_brcm63xx_tch @TARGET_ROOTFS_SQUASHFS||@TARGET_ROOTFS_INITRAMFS +PACKAGE_kmod-bcm-nand:kmod-bcm-nandtl bcm-flash
+  KCONFIG:=CONFIG_BCM_TCH_BL=y \
+           CONFIG_MTD_TCH=y \
+           CONFIG_CMDLINE_BOOL=y
+  PROVIDES:=bcm-bl
 endef
 
-$(eval $(call KernelPackage,brcm-4.16L.03))
+$(eval $(call KernelPackage,bcm-tch-cfe-bl))
 
 
-define KernelPackage/brcm-4.16L.04
-  SUBMENU:=Broadcom release
-  TITLE:=Broadcom release 4.16L.04
-  DEPENDS:=@TARGET_brcm63xx_tch
-  KCONFIG:=CONFIG_BCM_WLAN_IMPL=22
-  PROVIDES:=brcm-release
+define KernelPackage/bcm-cfe-bl
+  SUBMENU:=Broadcom kernel config
+  TITLE:=Support for Broadcom CFE based BL + flash layout
+  DEPENDS:=@TARGET_brcm63xx_tch @TARGET_ROOTFS_JFFS2||@TARGET_ROOTFS_INITRAMFS kmod-bcm-nand @(!PACKAGE_kmod-bcm-nandtl)
+  KCONFIG:=CONFIG_BCM_TCH_BL=n \
+           CONFIG_CMDLINE_BOOL=y
+  PROVIDES:=bcm-bl
 endef
 
-$(eval $(call KernelPackage,brcm-4.16L.04))
+$(eval $(call KernelPackage,bcm-cfe-bl))
 
-define KernelPackage/brcm-4.16L.05
-  SUBMENU:=Broadcom release
-  TITLE:=Broadcom release 4.16L.05
-  DEPENDS:=@TARGET_brcm63xx_tch
-  KCONFIG:=CONFIG_BCM_WLAN_IMPL=22
-  PROVIDES:=brcm-release
+
+define KernelPackage/bcm-clink-bl
+  SUBMENU:=Broadcom kernel config
+  TITLE:=Support for CenturyLink CFE BL + flash layout
+  DEPENDS:=@TARGET_brcm63xx_tch @TARGET_ROOTFS_JFFS2||@TARGET_ROOTFS_UBIFS||@TARGET_ROOTFS_INITRAMFS kmod-bcm-nand @(!PACKAGE_kmod-bcm-nandtl)
+  KCONFIG:=CONFIG_BCM_CLINK_BL=y \
+           CONFIG_BCM_TCH_BL=n \
+           CONFIG_MTD_BCM963XX=y
+  PROVIDES:=bcm-bl
 endef
 
-$(eval $(call KernelPackage,brcm-4.16L.05))
+$(eval $(call KernelPackage,bcm-clink-bl))
+
+
+define KernelPackage/bcm-nand
+  SUBMENU:=Broadcom kernel config
+  TITLE:=Support for NAND flash
+  DEPENDS:=@TARGET_brcm63xx_tch
+  KCONFIG:=CONFIG_MTD_BRCMNAND=y \
+           CONFIG_BRCMNAND_MTD_EXTENSION=y
+  PROVIDES:=bcm-flash
+endef
+
+$(eval $(call KernelPackage,bcm-nand))
+
+
+define KernelPackage/bcm-spi
+  SUBMENU:=Broadcom kernel config
+  TITLE:=Support for SPI flash
+  DEPENDS:=@TARGET_brcm63xx_tch
+  KCONFIG:=CONFIG_MTD_SPI=y
+  PROVIDES:=bcm-flash
+endef
+
+$(eval $(call KernelPackage,bcm-spi))
+
+
+define KernelPackage/bcm-nandtl
+  SUBMENU:=Broadcom kernel config
+  TITLE:=Technicolor NAND translation layer
+  DEPENDS:=@TARGET_brcm63xx_tch kmod-bcm-nand
+  KCONFIG:=CONFIG_MTD_NAND_TL=y
+endef
+
+$(eval $(call KernelPackage,bcm-nandtl))
+
+
+define KernelPackage/bcm-dualbank-auto
+  SUBMENU:=Broadcom kernel config
+  TITLE:=Technicolor regular dual bank implementation
+  DEPENDS:=@TARGET_brcm63xx_tch bcm-flash
+  KCONFIG:=CONFIG_MTD_TCH_BTAB=y
+  PROVIDES:=bcm-dualbank
+endef
+
+$(eval $(call KernelPackage,bcm-dualbank-auto))
+
+OHCI_FILES := $(wildcard $(patsubst %,$(LINUX_DIR)/drivers/usb/host/%.ko,ohci-hcd ohci-platform ohci-pci))
+
+define KernelPackage/bcm-usb1
+  SUBMENU:=Broadcom kernel config
+  TITLE:=Broadcom support for USB 1.1
+  DEPENDS:=@TARGET_brcm63xx_tch @(!PACKAGE_kmod-usb-ohci)
+  KCONFIG:=CONFIG_USB_OHCI_HCD \
+           CONFIG_USB_OHCI_HCD_PLATFORM=y \
+           CONFIG_USB_OHCI_HCD_PCI=y
+  FILES:= $(OHCI_FILES)
+endef
+
+$(eval $(call KernelPackage,bcm-usb1))
+
+EHCI_FILES := $(wildcard $(patsubst %,$(LINUX_DIR)/drivers/usb/host/%.ko,ehci-hcd ehci-platform ehci-pci)) \
+              $(wildcard $(LINUX_DIR)/../../bcmdrivers/opensource/char/plat-bcm/bcm9$(BRCM_CHIP)/bcm_usb.ko)
+
+define KernelPackage/bcm-usb2
+  SUBMENU:=Broadcom kernel config
+  TITLE:=Broadcom support for USB 2.0
+  DEPENDS:=@TARGET_brcm63xx_tch @(!PACKAGE_kmod-usb2)
+  KCONFIG:=CONFIG_USB_EHCI_HCD \
+           CONFIG_USB_EHCI_HCD_PLATFORM=y \
+           CONFIG_USB_EHCI_PCI=y
+  FILES:= $(EHCI_FILES)
+endef
+
+$(eval $(call KernelPackage,bcm-usb2))
+
+XHCI_FILES := $(wildcard $(patsubst %,$(LINUX_DIR)/drivers/usb/host/%.ko,xhci-hcd xhci-plat-hcd))
+
+define KernelPackage/bcm-usb3
+  SUBMENU:=Broadcom kernel config
+  TITLE:=Broadcom support for USB 3.0
+  DEPENDS:=@TARGET_brcm63xx_tch @(!PACKAGE_kmod-usb3)
+  KCONFIG:=CONFIG_USB_XHCI_HCD \
+           CONFIG_USB_XHCI_PLATFORM=y
+  FILES:= $(XHCI_FILES)
+endef
+
+$(eval $(call KernelPackage,bcm-usb3))
 

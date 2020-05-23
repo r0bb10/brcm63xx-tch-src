@@ -302,8 +302,9 @@ define KernelPackage/fs-nfs
 	CONFIG_NFS_USE_LEGACY_DNS=n \
 	CONFIG_NFS_USE_NEW_IDMAPPER=n
   FILES:= \
-	$(LINUX_DIR)/fs/nfs/nfs.ko
-  AUTOLOAD:=$(call AutoLoad,40,nfs)
+	$(LINUX_DIR)/fs/nfs/nfs.ko \
+	$(LINUX_DIR)/fs/nfs/nfsv3.ko
+  AUTOLOAD:=$(call AutoLoad,40,nfs nfsv3)
 endef
 
 define KernelPackage/fs-nfs/description
@@ -321,10 +322,10 @@ define KernelPackage/fs-nfs-common
 	CONFIG_SUNRPC \
 	CONFIG_GRACE_PERIOD
   FILES:= \
-	$(LINUX_DIR)/fs/nfs_common/nfs_acl.ko \
 	$(LINUX_DIR)/fs/lockd/lockd.ko \
-	$(LINUX_DIR)/net/sunrpc/sunrpc.ko
-  AUTOLOAD:=$(call AutoLoad,30,sunrpc lockd nfs_acl)
+	$(LINUX_DIR)/net/sunrpc/sunrpc.ko \
+	$(LINUX_DIR)/fs/nfs_common/grace.ko
+  AUTOLOAD:=$(call AutoLoad,30,grace sunrpc lockd)
 endef
 
 $(eval $(call KernelPackage,fs-nfs-common))

@@ -10,18 +10,19 @@ define Target/Description
 	Broadcom 63x38 (VANT-W)
 endef
 
-TARGET_FAMILY_MEMBERS:=VANT-W:SN VBNT-F:Z6 VBNT-H:Z8 VBNT-K:ZA VBNT-S:ZI
+#TARGET_FAMILY_MEMBERS:=VANT-W:SN VBNT-F:Z6 VBNT-H:Z8 VBNT-K:ZA VBNT-S:ZI
 
 BCM_SDK=$(TOPDIR)/extern/vant-w_18.3.313_1_20190509
 BRCMDRIVERS_DIR:=$(BCM_SDK)/broadcom_modules/bcmdrivers
-BCM_USERSPACE_DIR:=$(BCM_SDK)/bcm_userspace
-SHARED_DIR:=$(BCM_SDK)/shared
+BCM_USERSPACE_DIR:=$(BCM_SDK)
+SHARED_DIR:=$(TOPDIR)/extern/bcmopen-iopsys-DG400/shared
 
 PROFILE:=963138GWV
+RDP_PATH:=$(TOPDIR)/extern/bcmopen-iopsys-DG400/rdp
 RDPA_PLATFORM=dsl
-VOXXXLOAD=1
+#VOXXXLOAD=1
 
-INC_BROADCOM_APPS_SHARED:=$(BCM_USERSPACE_DIR)/broadcom_apps/shared
+INC_BROADCOM_APPS_SHARED:=$(SHARED_DIR)
 INC_BRCMDRIVER_PUB_PATH:=$(BRCMDRIVERS_DIR)/opensource/include
 INC_BRCMDRIVER_PRIV_PATH:=$(BRCMDRIVERS_DIR)/broadcom/include
 INC_ADSLDRV_PATH:=$(BRCMDRIVERS_DIR)/broadcom/char/adsl/impl1
@@ -36,7 +37,7 @@ INC_SPUDRV_PATH:=$(BRCMDRIVERS_DIR)/opensource/char/spudd/impl3
 INC_PWRMNGTDRV_PATH:=$(BRCMDRIVERS_DIR)/broadcom/char/pwrmngt/impl1
 INC_ENETDRV_PATH:=$(BRCMDRIVERS_DIR)/opensource/net/enet/impl5
 INC_EPONDRV_PATH:=$(BRCMDRIVERS_DIR)/broadcom/char/epon/impl1
-INC_RDPA_PATH:=$(BRCMDRIVERS_DIR)/opensource/char/rdpa_gpl/impl1/include
+INC_RDPA_PATH:=$(RDP_PATH)/drivers/rdpa_gpl/include
 INC_RDPA_EXT_PATH:=$(BRCMDRIVERS_DIR)/opensource/char/rdpa_gpl_ext/impl1/include
 INC_RDPA_MW_PATH:=$(BRCMDRIVERS_DIR)/opensource/char/rdpa_mw/impl1
 INC_RDPA_DRV_PATH:=$(BRCMDRIVERS_DIR)/opensource/char/rdpa_drv/impl1
@@ -44,13 +45,12 @@ INC_RDPA_PATH_PLATFORM:=$(INC_RDPA_PATH)/$(RDPA_PLATFORM)
 INC_RDPA_EXT_PATH_PLATFORM:=$(INC_RDPA_EXT_PATH)/$(RDPA_PLATFORM)
 INC_BDMF_PATH:=$(BRCMDRIVERS_DIR)/opensource/char/bdmf/impl1
 INC_UTILS_PATH:=$(SHARED_DIR)/opensource/utils
-RDP_PATH:=$(BCM_SDK)/rdp
 
 ifneq ($(strip $(RDPA_PLATFORM)),)
 EXTRA_CFLAGS_RDPA += -DRDPA_PLATFORM
 endif
 
-RDPSDK_DIR:=$(BCM_SDK)/rdp
+RDPSDK_DIR:=$(RDP_PATH)
 ifeq ($(strip $(BRCM_CHIP)),63138)
     RDP_PROJECT=DSL_63138
 endif
@@ -124,11 +124,11 @@ INC_RDP_FLAGS = -I$(PROJECT_DIR)/target/bdmf/system \
                 -I$(INC_BRCMDRIVER_PRIV_PATH)/$(BRCM_BOARD) \
                 -I$(SHARED_DIR)/opensource/drv/lport \
                 -I$(KERNEL_DIR)/net/core \
-                -I$(BRCMDRIVERS_DIR)/opensource/char/rdpa_gpl/impl1/include \
-                -I$(BRCMDRIVERS_DIR)/opensource/char/rdpa_gpl/impl1/include/autogen \
-                -I$(BRCMDRIVERS_DIR)/opensource/char/rdpa_gpl_ext/impl1/include \
-                -I$(BRCMDRIVERS_DIR)/opensource/char/rdpa_gpl_ext/impl1/include/gpon_stack \
-                -I$(BRCMDRIVERS_DIR)/opensource/char/rdpa_gpl_ext/impl1/include/autogen \
+                -I$(INC_RDPA_PATH) \
+                -I$(INC_RDPA_PATH)/autogen \
+                -I$(INC_RDPA_EXT_PATH) \
+                -I$(INC_RDPA_EXT_PATH)/gpon_stack \
+                -I$(INC_RDPA_EXT_PATH)/autogen \
                 -I$(BRCMDRIVERS_DIR)/broadcom/char/pon_drv/impl1 \
                 -I$(BRCMDRIVERS_DIR)/opensource/char/fpm/impl1 \
                  $(PROJ_DEFS)
@@ -141,10 +141,9 @@ EXTRA_CFLAGS_BDMF=-I$(INC_BDMF_PATH)/framework \
                   -I$(INC_BDMF_PATH)/shell
 
 EXTRA_CFLAGS_RDPA=$(EXTRA_CFLAGS_BDMF) \
-                  -I$(INC_RDPA_PATH) \
-                  -I$(INC_RDPA_EXT_PATH) \
-                  -I$(INC_RDPA_PATH)/$(RDPA_PLATFORM) \
-                  -I$(INC_RDPA_EXT_PATH)/$(RDPA_PLATFORM) \
+                  $(INC_RDP_FLAGS) \
+                  -I$(INC_RDPA_PATH_PLATFORM) \
+                  -I$(INC_RDPA_EXT_PATH_PLATFORM) \
                   -I$(INC_RDPA_MW_PATH) \
                   -I$(INC_RDPA_DRV_PATH)
 
