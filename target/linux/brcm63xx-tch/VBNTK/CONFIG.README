@@ -1,0 +1,2 @@
+kconfig-3.4.tch => VBNTK /proc/config.gz
+config-3.4 => roleo's config-3.4 + kconfig-3.4.tch + edits
